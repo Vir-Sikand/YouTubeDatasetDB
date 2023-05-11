@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up / Login</title>
+</head>
+<body>
+    <h1>Sign Up</h1>
+<form id="signup-form">
+    <label for="first-name">First Name:</label>
+    <input type="text" id="first-name" name="first-name" required><br><br>
+
+    <label for="last-name">Last Name:</label>
+    <input type="text" id="last-name" name="last-name" required><br><br>
+
+    <label for="email">Email Address:</label>
+    <input type="text" id="email" name="email" required><br><br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br><br>
+
+    <label for="phone-number">Phone Number:</label>
+    <input type="text" id="phone-number" name="phone-number"><br><br>
+
+    <input type="submit" value="Sign Up">
+</form>
+
+<div id="welcome-message"></div>
+
+<script>
+document.getElementById('signup-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Construct the form data
+    var formData = new URLSearchParams(new FormData(event.target)).toString();
+
+    fetch('/signup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            var errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = data.error;
+        } else {
+            var welcomeDiv = document.getElementById('welcome-message');
+            welcomeDiv.textContent = 'Welcome ' + data.firstName;
+        }
+    })
+    .catch(err => console.log(err));
+});
+</script>
+
+<div id="error-message"></div>
+
+    <h1>Login</h1>
+    <form method="GET" action="login">
+        <label for="login-email">Email:</label>
+        <input type="text" id="login-email" name="login-email"><br><br>
+
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" name="login-password"><br><br>
+        <input type="submit" value="Login">
+    </form>
+
+    <h1>Nickname</h1>
+    <form method="POST" action="nickname">
+        <label for="nickname">Nickname:</label>
+        <input type="text" id="nickname" name="nickname" required><br><br>
+        <label for="name">Nickname:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <input type="submit" value="Update">
+    </form>
+
+
+    <h1>Delete User</h1>
+    <form method="POST" action="delete-user">
+        <label for="email">Email Address:</label>
+        <input type="text" id="email" name="email" required><br><br>
+        <input type="submit" value="Delete">
+    </form>
+
+    <h1>Get Most Popular Video</h1>
+    <button id="get-popular-video-btn">Get Most Popular Video</button>
+    <div id="popular-video"></div>
+
+    <script>
+        document.getElementById('get-popular-video-btn').addEventListener('click', function() {
+            fetch('/popular_video')
+            .then(response => response.json())
+            .then(data => {
+                var popularVideoDiv = document.getElementById('popular-video');
+                popularVideoDiv.textContent = 'Most Popular Video: ' + data.title + ' by ' + data.channelID;
+            })
+            .catch(err => console.log(err));
+        });
+    </script>
+
+<h1>List of Wealthiest and Poorest</h1>
+<button id="get-wealth-poorest-btn">Get Wealthiest and Poorest</button>
+<div id="wealth-poorest"></div>
+
+<script>
+    document.getElementById('get-wealth-poorest-btn').addEventListener('click', function() {
+        fetch('/wealth_poorest')
+        .then(response => response.json())
+        .then(data => {
+            var wealthPoorestDiv = document.getElementById('wealth-poorest');
+            wealthPoorestDiv.textContent = '';
+            data.forEach(user => {
+                wealthPoorestDiv.textContent += 'User: ' + user.emailAddress + ', Age: ' + user.age + '\n';
+            });
+        })
+        .catch(err => console.log(err));
+    });
+</script>
+<h1>Search</h1>
+<form id="search-form">
+    <label for="search-term">Search:</label>
+    <input type="text" id="search-term" name="search-term" required><br><br>
+    <input type="submit" value="Search">
+</form>
+<div id="search-results"></div>
+
+<script>
+    document.getElementById('search-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var searchTerm = document.getElementById('search-term').value;
+
+        fetch('/search?search-term=' + searchTerm)
+            .then(response => response.json())
+            .then(data => {
+                var resultsDiv = document.getElementById('search-results');
+                resultsDiv.innerHTML = '';
+                data.forEach(function(result) {
+                    var p = document.createElement('p');
+                    p.textContent = result.title;
+                    resultsDiv.appendChild(p);
+                });
+            });
+    });
+</script>
+
+<h1>Top Videos Wealthiest and Poorest Users</h1>
+<button id="get-top-videos-wealth-poorest-btn">Get Wealthiest and Poorest Users</button>
+<div id="top-videos-wealth-poorest"></div>
+
+<script>
+    document.getElementById('get-top-videos-wealth-poorest-btn').addEventListener('click', function() {
+        fetch('/wealth_poorest_top_videos')
+        .then(response => response.json())
+        .then(data => {
+            var topVideosWealthPoorestDiv = document.getElementById('top-videos-wealth-poorest');
+            topVideosWealthPoorestDiv.textContent = '';
+            data.forEach(user => {
+                topVideosWealthPoorestDiv.textContent += 'User ID: ' + user.userID + ', Name: ' + user.FirstName + ' ' + user.LastName + ', Video ID: ' + user.videoID + '\n';
+            });
+        })
+        .catch(err => console.log(err));
+    });
+</script>
+
+
+
+</body>
+</html>
+
+    
